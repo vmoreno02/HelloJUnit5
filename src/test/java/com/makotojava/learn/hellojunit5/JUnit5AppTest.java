@@ -1,6 +1,14 @@
 package com.makotojava.learn.hellojunit5;
 
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.Assumptions.assumingThat;
+
+import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -8,6 +16,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
@@ -17,306 +26,257 @@ import org.slf4j.LoggerFactory;
 /**
  * JUnit 5 (with JUnitPlatform.class)
  * 
- * Class-level Exercises:
- * <ol>
- * <li>Enable Eclipse JUnit support for this test class using the {@link org.junit.runner.RunWith @RunWith} and
- * {@link org.junit.platform.runner.JUnitPlatform
- * JUnitPlatform} class.</li>
- * <li>Give the class a cool {@link org.junit.jupiter.api.DisplayName @DisplayName} that shows up in the JUnit test
- * report.</li>
- * </ol>
- *
  */
+@RunWith(JUnitPlatform.class)
+@DisplayName("Tutorial for Homework 1")
 public class JUnit5AppTest {
 
   // Create a JDK Logger here
+  private static final Logger logger = LoggerFactory.getLogger(JUnit5AppTest.class);
 
   // Create a fixture for the class under test
+  private App app;
 
   // Do something before ANY test is run in this class
+  @BeforeAll
   public static void init() {
+    logger.info("before all");
   }
 
   // Do something after ALL tests in this class are run
+  @AfterAll
   public static void done() {
+    logger.info("after all");
   }
 
   // Create an instance of the test class before each @Test method is executed
+  @BeforeEach
+  public void setUp() throws Exception {
+    logger.info("set up");
+    app = new App();
+  }
 
   // Destroy reference to the instance of the test class after each @Test method is executed
+  @AfterEach
+  public void tearDown() throws Exception {
+    logger.info("tear down");
+    app = null;
+  }
 
   // Disabled test
+  @Test
+  @Disabled
+  @DisplayName("disabled test")
   void testNotRun() {
+    logger.info("Nothing to see here");
   }
 
-  /**
-   * testAdd() - Exercises:
-   * <ol>
-   * <li>Tell JUnit this method is a test method.</li>
-   * <li>Give it a cool display name for the test report.</li>
-   * <li>The reference to the class under test cannot be null. If it is, the test should fail.</li>
-   * <li>Create a group of three tests of the add methods with the following arrays of positive numbers:
-   * <ol>
-   * <li>1, 2, 3, 4</li>
-   * <li>20, 934, 110</li>
-   * <li>2, 4, 6</li>
-   * </ol>
-   * Ensure the actual sum matches the expected sum for each group of numbers. Make sure that all groups of numbers are
-   * tested (i.e., if one fails, it should not fail the test method). Hint: use
-   * {@link org.junit.jupiter.api.Assertions#assertAll(org.junit.jupiter.api.function.Executable...) assertAll()}
-   * </ol>
-   */
+  @Test
+  @DisplayName("testing add")
   public void testAdd() {
-    //
-    // EXERCISE: TODO: ADD CODE HERE (See Javadoc comments for instructions. Use the Javadoc View in Eclipse to see the
-    // buttery smooth javadoc above.)
-    //
-    fail("Test not implemented!");
+    logger.info("normal test add");
+    assertNotNull(app);
+    
+    assertAll(
+      () -> {
+        long[] nums1 = {1, 2, 3, 4};
+        long add1 = app.add(nums1);
+        long exp1 = 10;
+        assertEquals(exp1, add1);
+      },
+      () -> {
+        long[] nums2 = {20, 934, 110};
+        long add2 = app.add(nums2);
+        long exp2 = 1064;
+        assertEquals(exp2, add2);
+      },
+      () -> {
+        long[] nums3 = {2, 4, 6};
+        long add3 = app.add(nums3);
+        long exp3 = 12;
+        assertEquals(exp3, add3);
+      });
   }
 
-  /**
-   * Class-level Exercises:
-   * <ol>
-   * <li>Make this class a nested test class (hint: use {@link org.junit.jupiter.api.Nested @Nested}).
-   * <li>Give the class a cool {@link org.junit.jupiter.api.DisplayName @DisplayName} that shows up in the JUnit test
-   * report.</li>
-   * <li>Create an instance of the {@link com.makotojava.learn.hellojunit5.App App} class specifically for this nested
-   * class:
-   * <ul>
-   * <li>Set the <code>classUnderTest</code> variable in a method called <code>setUp()</code> that runs before the test
-   * method does (hint: use {@link org.junit.jupiter.api.BeforeEach @BeforeEach})</li>
-   * </ul>
-   * <li>Set the <code>classUnderTest</code> variable to null in a method called <code>tearDown()</code> that runs after
-   * the
-   * test method does (hint: use {@link org.junit.jupiter.api.BeforeEach @AfterEach})</li>
-   * </ol>
-   * 
-   */
+  @Nested
+  @DisplayName("nested class for negative numbers")
   class NegativeNumbersTest {
+    private App app;
 
-    /**
-     * testAdd() - Exercises:
-     * <ol>
-     * <li>Tell JUnit this method is a test method.</li>
-     * <li>Give it a cool display name for the test report.</li>
-     * <li>The reference to the class under test cannot be null. If it is, the test should fail.</li>
-     * <li>Create a group of three tests of the add methods with the following arrays of positive numbers:
-     * <ol>
-     * <li>-1, -2, -3, -4</li>
-     * <li>-20, -934, -110</li>
-     * <li>-2, -4, -6</li>
-     * </ol>
-     * Ensure the actual sum matches the expected sum for each group of numbers. Make sure that all groups of numbers
-     * are
-     * tested (i.e., if one fails, it should not fail the test method). Hint: use
-     * {@link org.junit.jupiter.api.Assertions#assertAll(org.junit.jupiter.api.function.Executable...) assertAll()}
-     * </ol>
-     */
+    // Create an instance of the test class before each @Test method is executed
+    @BeforeEach
+    public void setUp() throws Exception {
+      logger.info("set up");
+      app = new App();
+    }
+
+    // Destroy reference to the instance of the test class after each @Test method is executed
+    @AfterEach
+    public void tearDown() throws Exception {
+      logger.info("tear down");
+      app = null;
+    }
+
+    @Test
+    @DisplayName("add negative numbers")
     public void testAdd() {
-      //
-      // EXERCISE: TODO: ADD CODE HERE (See Javadoc comments for instructions. Use the Javadoc View in Eclipse to see
-      // the buttery smooth javadoc above.)
-      //
-      fail("Test not implemented!");
+      logger.info("negative test add");
+      assertNotNull(app);
+      
+      assertAll(
+        () -> {
+          long[] nums1 = {-1, -2, -3, -4};
+          long add1 = app.add(nums1);
+          long exp1 = -10;
+          assertEquals(exp1, add1);
+        },
+        () -> {
+          long[] nums2 = {-20, -934, -110};
+          long add2 = app.add(nums2);
+          long exp2 = -1064;
+          assertEquals(exp2, add2);
+        },
+        () -> {
+          long[] nums3 = {-2, -4, -6};
+          long add3 = app.add(nums3);
+          long exp3 = -12;
+          assertEquals(exp3, add3);
+        });
     }
   }
 
-  /**
-   * Class-level Exercises:
-   * <ol>
-   * <li>Make this class a nested test class (hint: use {@link org.junit.jupiter.api.Nested @Nested}).
-   * <li>Give the class a cool {@link org.junit.jupiter.api.DisplayName @DisplayName} that shows up in the JUnit test
-   * report.</li>
-   * </ol>
-   * 
-   */
+  @Nested
+  @DisplayName("class for mixed positive and negative numbers")
   class PositiveAndNegativeNumbersTest {
 
-    /**
-     * testAdd() - Exercises:
-     * <ol>
-     * <li>Tell JUnit this method is a test method.</li>
-     * <li>Give it a cool display name for the test report.</li>
-     * <li>The reference to the class under test cannot be null. If it is, the test should fail.</li>
-     * <li>Create a group of three tests of the add methods with the following arrays of positive numbers:
-     * <ol>
-     * <li>-1, 2, -3, 4</li>
-     * <li>-20, 934, -110</li>
-     * <li>-2, -4, 6</li>
-     * </ol>
-     * Ensure the actual sum matches the expected sum for each group of numbers. Make sure that all groups of numbers
-     * are
-     * tested (i.e., if one fails, it should not fail the test method). Hint: use
-     * {@link org.junit.jupiter.api.Assertions#assertAll(org.junit.jupiter.api.function.Executable...) assertAll()}
-     * </ol>
-     */
+    @Test
+    @DisplayName("add positive and negative numbers")
     public void testAdd() {
-      //
-      // EXERCISE: TODO: ADD CODE HERE (See Javadoc comments for instructions. Use the Javadoc View in Eclipse to see
-      // the buttery smooth javadoc above.)
-      //
-      fail("Test not implemented!");
+      logger.info("positive negative test add");
+      assertNotNull(app);
+      
+      assertAll(
+        () -> {
+          long[] nums1 = {-1, 2, -3, 4};
+          long add1 = app.add(nums1);
+          long exp1 = 2;
+          assertEquals(exp1, add1);
+        },
+        () -> {
+          long[] nums2 = {-20, 934, -110};
+          long add2 = app.add(nums2);
+          long exp2 = 804;
+          assertEquals(exp2, add2);
+        },
+        () -> {
+          long[] nums3 = {-2, -4, 6};
+          long add3 = app.add(nums3);
+          long exp3 = 0;
+          assertEquals(exp3, add3);
+        });
     }
 
-    /**
-     * testAdd_OnlyOnFriday - Exercises:
-     * <ol>
-     * <li>Tell JUnit this method is a test method.</li>
-     * <li>Give it a cool display name for the test report.</li>
-     * <li>Use the JDK 8 Date/Time API to get the current local date/time, along with a simple Assumption (hint: use
-     * {@link org.junit.jupiter.api.Assumptions#assumeTrue(boolean) assumeTrue()}) that today is Friday
-     * (or any other day of the week of your choosing, just so you pick one), or the test is skipped.</li>
-     * <li>Pass the following numbers as operands to the {@link com.makotojava.learn.hellojunit5.App#add(long[]) add}
-     * method: 1, 2, 3, 4, 5</li>
-     * <li>Ensure the actual sum matches the expected sum.</li>
-     * </ol>
-     */
+    @Test
+    @DisplayName("test to be run only on fridays")
     public void testAdd_OnlyOnFriday() {
-      //
-      // EXERCISE: TODO: ADD CODE HERE (See Javadoc comments for instructions. Use the Javadoc View in Eclipse to see
-      // the buttery smooth javadoc above.)
-      //
-      fail("Test not implemented!");
+      logger.info("test add friday");
+      LocalDateTime ldt = LocalDateTime.now();
+      assumeTrue(ldt.getDayOfWeek().getValue() == 5);
+
+      long[] nums = {1, 2, 3, 4, 5};
+      long add_result = app.add(nums);
+      long expected = 15;
+      assertEquals(expected, add_result);
     }
 
-    /**
-     * testAdd_OnlyOnFriday_WithLambda - Exercises:
-     * <ol>
-     * <li>Tell JUnit this method is a test method.</li>
-     * <li>Give it a cool display name for the test report.</li>
-     * <li>Use the JDK 8 Date/Time API to get the current local date/time, along with a simple Assumption (hint: use
-     * {@link org.junit.jupiter.api.Assumptions#assumingThat(boolean, org.junit.jupiter.api.function.Executable)
-     * assumingThat()}) that today is Friday
-     * (or any other day of the week of your choosing, just so you pick one), or the test is skipped.</li>
-     * <li>Pass the following numbers as operands to the {@link com.makotojava.learn.hellojunit5.App#add(long[]) add}
-     * method: 1, 2, 3, 4, 5</li>
-     * <li>Ensure the actual sum matches the expected sum.</li>
-     * </ol>
-     */
+    @Test
+    @DisplayName("test to be run only on fridays and it has a lambda")
     public void testAdd_OnlyOnFriday_WithLambda() {
-      //
-      // EXERCISE: TODO: ADD CODE HERE (See Javadoc comments for instructions. Use the Javadoc View in Eclipse to see
-      // the buttery smooth javadoc above.)
-      //
-      fail("Test not implemented!");
+      logger.info("test add friday lambda");
+      LocalDateTime ldt = LocalDateTime.now();
+      assumingThat(ldt.getDayOfWeek().getValue() == 5,
+      () -> {
+        long[] nums = {1, 2, 3, 4, 5};
+        long add_result = app.add(nums);
+        long expected = 15;
+        assertEquals(expected, add_result);
+      });
     }
 
   }
 
-  /**
-   * Class-level Exercises:
-   * <ol>
-   * <li>Make this class a nested test class (hint: use {@link org.junit.jupiter.api.Nested @Nested}).
-   * <li>Give the class a cool {@link org.junit.jupiter.api.DisplayName @DisplayName} that shows up in the JUnit test
-   * report.</li>
-   * </ol>
-   * 
-   */
+  @Nested
+  @DisplayName("single operand test class")
   class JUnit5AppSingleOperandTest {
 
-    /**
-     * testAdd_NumbersGt0() - Exercises:
-     * <ol>
-     * <li>Tell JUnit this method is a test method.</li>
-     * <li>Give it a cool display name for the test report.</li>
-     * <li>The reference to the class under test cannot be null. If it is, the test should fail.</li>
-     * <li>Create a group of two tests of the add methods with the following arrays of positive numbers:
-     * <ol>
-     * <li>1</li>
-     * <li>0</li>
-     * </ol>
-     * Ensure the actual sum matches the expected sum for each group of numbers. Make sure that all groups of numbers
-     * are
-     * tested (i.e., if one fails, it should not fail the test method). Hint: use
-     * {@link org.junit.jupiter.api.Assertions#assertAll(org.junit.jupiter.api.function.Executable...) assertAll()}
-     * </ol>
-     */
+    @Test
+    @DisplayName("test array of 1 positive number")
     public void testAdd_NumbersGt0() {
-      //
-      // EXERCISE: TODO: ADD CODE HERE (See Javadoc comments for instructions. Use the Javadoc View in Eclipse to see
-      // the buttery smooth javadoc above.)
-      //
-      fail("Test not implemented!");
+      logger.info("1 positive test add");
+      assertNotNull(app);
+
+      assertAll(
+        () -> {
+          long[] nums = {1};
+          long add_result = app.add(nums);
+          long expected = 1;
+          assertEquals(expected, add_result);
+        }, 
+        () -> {
+          long[] nums2 = {0};
+          long add_result2 = app.add(nums2);
+          long expected2 = 0;
+          assertEquals(expected2, add_result2);
+        }
+      );
     }
 
-    /**
-     * testAdd_NumbersLt0() - Exercises:
-     * <ol>
-     * <li>Tell JUnit this method is a test method.</li>
-     * <li>Give it a cool display name for the test report.</li>
-     * <li>The reference to the class under test cannot be null. If it is, the test should fail.</li>
-     * <li>Create a group of two tests of the add methods with the following arrays of positive numbers:
-     * <ol>
-     * <li>-1</li>
-     * <li>-10</li>
-     * </ol>
-     * Ensure the actual sum matches the expected sum for each group of numbers. Make sure that all groups of numbers
-     * are
-     * tested (i.e., if one fails, it should not fail the test method). Hint: use
-     * {@link org.junit.jupiter.api.Assertions#assertAll(org.junit.jupiter.api.function.Executable...) assertAll()}
-     * </ol>
-     */
+    @Test
+    @DisplayName("test array of 1 negative number")
     public void testAdd_NumbersLt0() {
-      //
-      // EXERCISE: TODO: ADD CODE HERE (See Javadoc comments for instructions. Use the Javadoc View in Eclipse to see
-      // the buttery smooth javadoc above.)
-      //
-      fail("Test not implemented!");
+      logger.info("1 negative test add");
+      assertNotNull(app);
+
+      assertAll(
+        () -> {
+          long[] nums = {-1};
+          long add_result = app.add(nums);
+          long expected = -1;
+          assertEquals(expected, add_result);
+        }, 
+        () -> {
+          long[] nums2 = {-10};
+          long add_result2 = app.add(nums2);
+          long expected2 = -10;
+          assertEquals(expected2, add_result2);
+        }
+      );
     }
   }
 
-  /**
-   * Class-level Exercises:
-   * <ol>
-   * <li>Make this class a nested test class (hint: use {@link org.junit.jupiter.api.Nested @Nested}).
-   * <li>Give the class a cool {@link org.junit.jupiter.api.DisplayName @DisplayName} that shows up in the JUnit test
-   * report.</li>
-   * </ol>
-   * 
-   */
+  @Nested
+  @DisplayName("class for empty array")
   class JUnit5AppZeroOperandsTest {
 
-    /**
-     * testAdd_ZeroOperands_EmptyArgument() - Exercises:
-     * <ol>
-     * <li>Tell JUnit this method is a test method.</li>
-     * <li>Give it a cool display name for the test report.</li>
-     * <li>The reference to the class under test cannot be null. If it is, the test should fail.</li>
-     * <li>Pass an empty array as operands argument to the {@link com.makotojava.learn.hellojunit5.App#add(long[]) add}
-     * method.</li>
-     * <li>Ensure that an {@link java.lang.IllegalArgumentException IllegalArgumentException} is thrown (hint: use the
-     * {@link org.junit.jupiter.api.Assertions#assertThrows(Class, org.junit.jupiter.api.function.Executable)
-     * assertThrows()} method).</li>
-     * </ol>
-     */
+    @Test
+    @DisplayName("test empty array")
     public void testAdd_ZeroOperands_EmptyArgument() {
-      //
-      // EXERCISE: TODO: ADD CODE HERE (See Javadoc comments for instructions. Use the Javadoc View in Eclipse to see
-      // the buttery smooth javadoc above.)
-      //
-      fail("Test not implemented!");
+      logger.info("empty array test add");
+      assertNotNull(app);
+
+      long[] nums = {};
+      assertThrows(IllegalArgumentException.class, () -> app.add(nums));
     }
 
-    /**
-     * testAdd_ZeroOperands_NullArgument() - Exercises:
-     * <ol>
-     * <li>Tell JUnit this method is a test method.</li>
-     * <li>Give it a cool display name for the test report.</li>
-     * <li>The reference to the class under test cannot be null. If it is, the test should fail.</li>
-     * <li>Pass an empty array as operands argument to the {@link com.makotojava.learn.hellojunit5.App#add(long[]) add}
-     * method.</li>
-     * <li>Ensure that an {@link java.lang.IllegalArgumentException IllegalArgumentException} is thrown (hint: use the
-     * {@link org.junit.jupiter.api.Assertions#assertThrows(Class, org.junit.jupiter.api.function.Executable)
-     * assertThrows()} method).</li>
-     * <li>The test should fail if the message in the exception is not "Operands argument cannot be null".</li>
-     * </ol>
-     */
+    @Test
+    @DisplayName("test null")
     public void testAdd_ZeroOperands_NullArgument() {
-      //
-      // EXERCISE: TODO: ADD CODE HERE (See Javadoc comments for instructions. Use the Javadoc View in Eclipse to see
-      // the buttery smooth javadoc above.)
-      //
-      fail("Test not implemented!");
+      logger.info("null array test add");
+      assertNotNull(app);
+
+      long[] nums = null;
+      Throwable excep = assertThrows(IllegalArgumentException.class, () -> app.add(nums));
+      assertEquals("Operands argument cannot be null", excep.getLocalizedMessage());
     }
 
   }
